@@ -1,6 +1,6 @@
-module BxBlockProfile
+module AccountBlock
   class Patient < ApplicationRecord
-
+     self.table_name = :patients
     validates :full_phone_number, presence: true,uniqueness: true
 
     def update_otp
@@ -12,6 +12,5 @@ module BxBlockProfile
     #  txt     = BxBlockSms::SendSms.new("+#{self.full_phone_number}", message)
     #  txt.call
     end
-
   end
 end

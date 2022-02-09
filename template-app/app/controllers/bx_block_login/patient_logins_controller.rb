@@ -47,7 +47,7 @@ module BxBlockLogin
 
     def resend_otp
       begin
-        account = BxBlockProfile::Patient.find(@token.id)
+        account = AccountBlock::Patient.find(@token.id)
         if account.update_otp
          account.send_pin_via_sms
          

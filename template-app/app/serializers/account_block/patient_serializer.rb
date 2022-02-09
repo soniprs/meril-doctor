@@ -1,4 +1,4 @@
-module BxBlockProfile
+module AccountBlock
   class PatientSerializer
     include FastJsonapi::ObjectSerializer
 

@@ -1,20 +1,21 @@
-module BxBlockProfile
+module AccountBlock
   class PatientsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
 
-    before_action :validate_json_web_token, only: [:sms_confirm, :patient_create, :update]
+    before_action :validate_json_web_token, only: [:verify_otp, :patient_create]
 
     def create_otp
+
       json_params = jsonapi_deserialize(params)
      
       account = Patient.find_by(full_phone_number: json_params['full_phone_number'],activated: true)
 
       return render json: {errors: [{account: 'Patient already activated',  }]}, status: :unprocessable_entity unless account.nil?
 
-      @sms_otp = AccountBlock::SmsOtp.new(jsonapi_deserialize(params))
+      @sms_otp = SmsOtp.new(jsonapi_deserialize(params))
       if @sms_otp.save
         
-        render json: AccountBlock::SmsOtpSerializer.new(@sms_otp, meta: {
+        render json: SmsOtpSerializer.new(@sms_otp, meta: {
            
             token: BuilderJsonWebToken.encode(@sms_otp.id),
           }).serializable_hash, status: :created
@@ -25,9 +26,9 @@ module BxBlockProfile
     end
 
 
-    def sms_confirm
+    def verify_otp
       begin
-        @sms_otp = AccountBlock::SmsOtp.find(@token.id)
+        @sms_otp = SmsOtp.find(@token.id)
       rescue ActiveRecord::RecordNotFound => e
         return render json: {errors: [
           {phone: 'Phone Number Not Found'},
@@ -43,7 +44,7 @@ module BxBlockProfile
       end
 
       if @sms_otp.activated?
-        return render json: AccountBlock::ValidateAvailableSerializer.new(@sms_otp, meta: {
+        return render json: ValidateAvailableSerializer.new(@sms_otp, meta: {
           message: 'Phone Number Already Activated',
         }).serializable_hash, status: :ok
       end
@@ -53,7 +54,7 @@ module BxBlockProfile
         @sms_otp.save
         
 
-        render json: AccountBlock::ValidateAvailableSerializer.new(@sms_otp, meta: {
+        render json: ValidateAvailableSerializer.new(@sms_otp, meta: {
           message: 'Phone Number Confirmed Successfully',
           token: BuilderJsonWebToken.encode(@sms_otp.id),
         }).serializable_hash, status: :ok
@@ -70,7 +71,7 @@ module BxBlockProfile
       case params[:data][:type] #### rescue invalid API format
       when 'sms_account'
         begin
-          @sms_otp = AccountBlock::SmsOtp.find(@token.id)
+          @sms_otp = SmsOtp.find(@token.id)
           
         rescue ActiveRecord::RecordNotFound => e
           return render json: {errors: [
@@ -89,17 +90,17 @@ module BxBlockProfile
           render json: {errors: format_activerecord_errors(@account.errors)},
             status: :unprocessable_entity
         end
-      when 'social_account'
-        @account = Patient.new(jsonapi_deserialize(params))
-        @account.password = @account.email
-        if @account.save
-          render json: PatientSerializer.new(@account, meta: {
-            token: encode(@account.id),
-          }).serializable_hash, status: :created
-        else
-          render json: {errors: format_activerecord_errors(@account.errors)},
-            status: :unprocessable_entity
-        end
+      # when 'social_account'
+      #   @account = Patient.new(jsonapi_deserialize(params))
+      #   @account.password = @account.email
+      #   if @account.save
+      #     render json: PatientSerializer.new(@account, meta: {
+      #       token: encode(@account.id),
+      #     }).serializable_hash, status: :created
+      #   else
+      #     render json: {errors: format_activerecord_errors(@account.errors)},
+      #       status: :unprocessable_entity
+      #   end
 
       else
         render json: {errors: [

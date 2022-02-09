@@ -8,9 +8,9 @@ Rails.application.routes.draw do
     post 'resend_otp', to: 'patient_logins#resend_otp'
    end
 
-   namespace :bx_block_profile do
+   namespace :account_block do
     post 'create_otp', to: 'patients#create_otp'
-    post 'sms_confirm', to: 'patients#sms_confirm'
+    post 'verify_otp', to: 'patients#verify_otp'
     post 'patient_create', to: 'patients#patient_create'
    end
  end

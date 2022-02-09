@@ -6,8 +6,6 @@ module AccountBlock
       :first_name,
       :last_name,
       :full_phone_number,
-     
-      
       :email,
       :activated,
     ]

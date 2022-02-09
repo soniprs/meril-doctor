@@ -6,7 +6,7 @@ module BxBlockLogin
       case account_params.type
       when 'sms_account'
         phone = Phonelib.parse(account_params.full_phone_number).sanitized
-        account = BxBlockProfile::Patient.find_by(full_phone_number: phone,activated: true)
+        account = AccountBlock::Patient.find_by(full_phone_number: phone,activated: true)
       end
 
       unless account.present?
