@@ -15,9 +15,12 @@ Rails.application.routes.draw do
     post 'create_otp_doctor', to: 'doctors#create_otp_doctor'
     post 'doctor_verify_otp', to: 'doctors#doctor_verify_otp'
     post 'doctor_create', to: 'doctors#doctor_create'
+    put 'update_doctor', to: 'doctors#update_doctor'
+
 
     post 'create_otp', to: 'patients#create_otp'
     post 'verify_otp', to: 'patients#verify_otp'
     post 'patient_create', to: 'patients#patient_create'
+    get 'search_doctor', to: 'patients#search_doctor'
    end
  end

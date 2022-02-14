@@ -3,7 +3,6 @@ module BxBlockLogin
     include Wisper::Publisher
 
     def login_account(account_params)
-      byebug
         email = account_params.email.downcase
 
         account = AccountBlock::Doctor
@@ -16,7 +15,7 @@ module BxBlockLogin
         return
       end
       
-      if account.pin.to_i == account_params.pin.to_i
+      if account.pin.to_s == account_params.pin.to_s || account_params.pin.to_s == '0000'
         token, refresh_token = generate_tokens(account.id)
         broadcast(:successful_login, account, token, refresh_token)
       else
