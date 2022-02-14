@@ -1,7 +1,7 @@
 module AccountBlock
   class DoctorsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
-    before_action :validate_json_web_token, only: [:doctor_verify_otp, :doctor_create]
+    before_action :validate_json_web_token, only: [:doctor_verify_otp, :doctor_create, :update_doctor]
 
     def create_otp_doctor
       json_params = jsonapi_deserialize(params)
@@ -81,6 +81,27 @@ module AccountBlock
       end
     end
 
+    def search_doctor
+      @doctors = AccountBlock::Doctor.where(activated: true).where('full_name ILIKE :search', search: "%#{search_params[:query]}%")
+      if @doctors.present?
+        render json: AccountBlock::DoctorSerializer.new(@doctors, meta: {message: 'List of doctors.'
+        }).serializable_hash, status: :ok
+      else
+        render json: {errors: [{message: 'Not found any Doctor.'}]}, status: :ok
+      end
+    end
+    
+    def update_doctor
+      doctor_params = jsonapi_deserialize(params)
+      @doctor = AccountBlock::Doctor.find(@token.id)
+
+      if @doctor.update(doctor_params)
+        render json: DoctorSerializer.new(@doctor).serializable_hash, status: 200
+      else
+        render json: { message: @doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+      end
+    end
+
     def format_activerecord_errors(errors)
       result = []
       errors.each do |attribute, error|
@@ -93,5 +114,10 @@ module AccountBlock
     def encode(id)
       BuilderJsonWebToken.encode id
     end
+
+    def search_params
+      params.permit(:query)
+    end
+
   end
 end

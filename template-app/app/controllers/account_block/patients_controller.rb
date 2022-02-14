@@ -61,8 +61,6 @@ module AccountBlock
       if @sms_otp.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
         @sms_otp.activated = true
         @sms_otp.save
-        
-
         render json: SmsOtpSerializer.new(@sms_otp, meta: {
           message: 'Phone Number Confirmed Successfully',
           token: BuilderJsonWebToken.encode(@sms_otp.id),
@@ -90,8 +88,6 @@ module AccountBlock
 
         params[:data][:attributes][:full_phone_number] =@sms_otp.full_phone_number
         params[:data][:attributes][:full_name] =@sms_otp.full_name
-
-
         @account = Patient.new(jsonapi_deserialize(params))
         @account.activated = true
         if @account.save
@@ -132,6 +128,5 @@ module AccountBlock
     def encode(id)
       BuilderJsonWebToken.encode id
     end
-
   end
 end

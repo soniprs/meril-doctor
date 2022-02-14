@@ -65,7 +65,7 @@ module BxBlockLogin
     #   #   render json: {error: "Something went wrong while sending OTP."}
     #   end
     # end
-    def send_otp
+    def send_sms_otp
       begin
         email = params[:email]
         account = AccountBlock::Doctor
@@ -101,7 +101,7 @@ module BxBlockLogin
       end
       if @account.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
         render json: AccountBlock::DoctorSerializer.new(@account, meta: {
-          message: 'Otp verified.',
+          message: 'Login Successful.',
           token: BuilderJsonWebToken.encode(@account.id),
         }).serializable_hash, status: :ok
       else
