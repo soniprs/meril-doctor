@@ -6,6 +6,7 @@ module BxBlockLogin
     def doctor_login
       # case params[:data][:type]
       # when 'sms_account', 'email_account', 'social_account'
+        # byebug
         account = OpenStruct.new(jsonapi_deserialize(params))
         account.type = params[:data][:type]
 
