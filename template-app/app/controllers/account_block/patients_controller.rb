@@ -10,18 +10,27 @@ module AccountBlock
      
       account = Patient.find_by(full_phone_number: json_params['full_phone_number'],activated: true)
 
-      return render json: {errors: [{account: 'Patient already activated',  }]}, status: :unprocessable_entity unless account.nil?
-
-      @sms_otp = SmsOtp.new(jsonapi_deserialize(params))
-      if @sms_otp.save
-        
-        render json: SmsOtpSerializer.new(@sms_otp, meta: {
-           
-            token: BuilderJsonWebToken.encode(@sms_otp.id),
-          }).serializable_hash, status: :created
+      return render json: {errors: [{account: 'Phone Number Already Present.',  }]}, status: :unprocessable_entity unless account.nil?
+      @phone = Phonelib.parse(json_params['full_phone_number'])
+      otp_account  = SmsOtp.find_by(full_phone_number: @phone.sanitized)
+      if otp_account.present?
+        otp_account.generate_pin_and_valid_date
+        otp_account.save!
+        render json: SmsOtpSerializer.new(otp_account, meta: {
+              token: BuilderJsonWebToken.encode(otp_account.id),
+            }).serializable_hash, status: :created
       else
-        render json: {errors: format_activerecord_errors(@sms_otp.errors)},
-            status: :unprocessable_entity
+        @sms_otp = SmsOtp.new(jsonapi_deserialize(params))
+        if @sms_otp.save
+          
+          render json: SmsOtpSerializer.new(@sms_otp, meta: {
+             
+              token: BuilderJsonWebToken.encode(@sms_otp.id),
+            }).serializable_hash, status: :created
+        else
+          render json: {errors: format_activerecord_errors(@sms_otp.errors)},
+              status: :unprocessable_entity
+        end
       end
     end
 
@@ -44,8 +53,8 @@ module AccountBlock
       end
 
       if @sms_otp.activated?
-        return render json: ValidateAvailableSerializer.new(@sms_otp, meta: {
-          message: 'Phone Number Already Activated',
+        return render json: SmsOtpSerializer.new(@sms_otp, meta: {
+          message: 'Phone Number Already Activated', token: BuilderJsonWebToken.encode(@sms_otp.id)
         }).serializable_hash, status: :ok
       end
 
@@ -54,7 +63,7 @@ module AccountBlock
         @sms_otp.save
         
 
-        render json: ValidateAvailableSerializer.new(@sms_otp, meta: {
+        render json: SmsOtpSerializer.new(@sms_otp, meta: {
           message: 'Phone Number Confirmed Successfully',
           token: BuilderJsonWebToken.encode(@sms_otp.id),
         }).serializable_hash, status: :ok
@@ -79,8 +88,9 @@ module AccountBlock
           ]}, status: :unprocessable_entity
         end
 
-        params[:data][:attributes][:full_phone_number] =
-          @sms_otp.full_phone_number
+        params[:data][:attributes][:full_phone_number] =@sms_otp.full_phone_number
+        params[:data][:attributes][:full_name] =@sms_otp.full_name
+
 
         @account = Patient.new(jsonapi_deserialize(params))
         @account.activated = true

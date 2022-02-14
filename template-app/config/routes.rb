@@ -4,11 +4,13 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
    namespace :bx_block_login  do
-    post 'patient_login', to: 'patient_logins#patient_login'
-    post 'resend_otp', to: 'patient_logins#resend_otp'
+    # post 'patient_login', to: 'patient_logins#patient_login'
+    get 'send_otp', to: 'patient_logins#send_otp'
+    get 'verify_otp', to: 'patient_logins#verify_otp'
 
-    post 'doctor_login', to: 'doctor_logins#doctor_login'
-    post 'resend_otp_doctor', to: 'doctor_logins#resend_otp_doctor'
+    # post 'doctor_login', to: 'doctor_logins#doctor_login'
+    get 'send_doctor_otp', to: 'doctor_logins#send_otp'
+    get 'verify_doctor_otp', to: 'doctor_logins#verify_otp'
    end
 
    namespace :account_block do

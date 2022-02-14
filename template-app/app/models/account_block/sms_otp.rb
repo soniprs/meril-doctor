@@ -17,7 +17,7 @@ module AccountBlock
 
     def generate_pin_and_valid_date
       self.pin         = rand(1_000..9_999)
-      self.valid_until = Time.current + 5.minutes
+      self.valid_until = Time.current + 120.minutes
     end
 
     def send_pin_via_sms
