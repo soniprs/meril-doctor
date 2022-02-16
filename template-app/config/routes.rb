@@ -31,5 +31,7 @@ Rails.application.routes.draw do
     post 'doctor_create', to: 'doctors#doctor_create'
     get 'search_doctor', to: 'doctors#search_doctor'
     put 'update_doctor', to: 'doctors#update_doctor'
+    get 'show', to: 'doctors#show'
+    post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
   end
  end
