@@ -3,7 +3,7 @@ module AccountBlock
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ,:update_profile, :upload_image]
+    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ,:update_profile, :patient_profile_photo]
 
     def create_otp
 
@@ -127,7 +127,7 @@ module AccountBlock
       end
     end
 
-    def display_patients_detail
+    def get_patients_list
       @patients = Patient.all
       if @patients.present?
         render json: PatientSerializer.new(@patients, meta: {message: 'List of Patients.'
@@ -137,16 +137,23 @@ module AccountBlock
       end
     end
 
-    def upload_image
-      validator = AccountBlock::LogoValidation.new(params)
-      return render json: {status: 422, message: validator.errors.full_messages.to_sentence }, status: :unprocessable_entity unless validator.valid?
-      @patient = AccountBlock::Patient.find(@token.id)
-    
+    def patient_detail
+       @patient = AccountBlock::Patient.find(params[:id])
       if @patient.present?
-        @patient.image.attach(params["image"])
+        render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
+        }).serializable_hash, status: :ok
+      else
+        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
+      end
+    end
+
+    def patient_profile_photo
+     @patient = AccountBlock::Patient.find(@token.id)
+      if @patient.present?
+        @patient.profile_photo.attach(params["profile_photo"])
         @patient.save
-        patient_image = @patient.try(:image)
-        if @patient.image.present?
+        patient_image = @patient.try(:profile_photo)
+        if @patient.profile_photo.present?
           render json: { status: 200, file_path: rails_blob_url(patient_image) }
         else
           render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity

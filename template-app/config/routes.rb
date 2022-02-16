@@ -16,8 +16,10 @@ Rails.application.routes.draw do
     post 'verify_otp', to: 'patients#verify_otp'
     post 'patient_create', to: 'patients#patient_create'
     put 'update_profile', to: 'patients#update_profile'
-    get 'display_patients_detail', to: 'patients#display_patients_detail'
-    put 'upload_image', to: 'patients#upload_image'
+    get 'get_patients_list', to: 'patients#get_patients_list'
+    put 'patient_profile_photo', to: 'patients#patient_profile_photo'
+    get 'patient_detail', to: 'patients#patient_detail'
+    
    end
 
 
