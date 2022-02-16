@@ -1,6 +1,7 @@
 module AccountBlock
   class PatientSerializer
     include FastJsonapi::ObjectSerializer
+    include Rails.application.routes.url_helpers
 
     attributes *[
       :first_name,
@@ -19,5 +20,15 @@ module AccountBlock
       :disease,
 
     ]
+
+    attributes :image do |object|
+      if object.image.attached?
+        @host = Rails.env.development? ? 'http://localhost:3000' : ''
+        @host + Rails.application.routes.url_helpers.rails_blob_url(object.image, only_path: true)
+      else
+        ''
+      end
+    end
+    
   end
 end

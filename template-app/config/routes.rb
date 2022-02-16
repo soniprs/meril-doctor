@@ -8,12 +8,16 @@ Rails.application.routes.draw do
     # post 'patient_login', to: 'patient_logins#patient_login'
     get 'send_otp', to: 'patient_logins#send_otp'
     get 'verify_otp', to: 'patient_logins#verify_otp'
+
    end
 
    namespace :account_block do
     post 'create_otp', to: 'patients#create_otp'
     post 'verify_otp', to: 'patients#verify_otp'
     post 'patient_create', to: 'patients#patient_create'
+    put 'update_profile', to: 'patients#update_profile'
+    get 'display_patients_detail', to: 'patients#display_patients_detail'
+    put 'upload_image', to: 'patients#upload_image'
    end
 
 
