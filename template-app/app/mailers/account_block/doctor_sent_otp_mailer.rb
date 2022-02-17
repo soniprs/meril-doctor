@@ -17,9 +17,9 @@ module AccountBlock
     end
 
     def send_otp_mailer
-      @otp = params[:otp]
-      @pin = @otp.pin
-      mail(:to => "<#{@otp.email}>", :subject => "Account OTP Code")
+      @account = params[:account]
+      @pin = @account.pin
+      mail(:to => "<#{@account.email}>", :subject => "Account OTP Code")
     end
 
     private

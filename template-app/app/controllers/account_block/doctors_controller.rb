@@ -7,11 +7,15 @@ module AccountBlock
       json_params = jsonapi_deserialize(params)
       account = Doctor.find_by(email: json_params['email'].downcase,activated: true)
       return render json: {errors: [{account: 'Doctor already activated',  }]}, status: :unprocessable_entity unless account.nil?
-
-      @email_otp = AccountBlock::EmailOtp.new(jsonapi_deserialize(params))
+      @email_otp = AccountBlock::EmailOtp.find_by_email(json_params["email"])
+      if @email_otp.present?
+        @email_otp.generate_pin_and_valid_date
+      else
+        @email_otp = AccountBlock::EmailOtp.new(jsonapi_deserialize(params))
+      end
       if @email_otp.save
         DoctorSentOtpMailer
-        .with(otp: @email_otp, host: request.base_url)
+        .with(account: @email_otp, host: request.base_url)
         .send_otp_mailer.deliver
         render json: EmailOtpSerializer.new(@email_otp, meta: {
             token: BuilderJsonWebToken.encode(@email_otp.id),
