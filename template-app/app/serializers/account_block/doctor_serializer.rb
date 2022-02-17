@@ -28,5 +28,14 @@ module AccountBlock
       end
     end
 
+    attribute :documents do |object, params|
+      if object.documents.attached?
+        object.documents.map { |image|
+            @host = Rails.env.development? ? 'http://localhost:3000' : 'https://meril-101378-ruby.b101378.dev.eastus.az.svc.builder.cafe'
+            @host + Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true )
+        }
+      end
+    end
+
   end
 end

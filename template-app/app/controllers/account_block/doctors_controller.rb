@@ -101,6 +101,23 @@ module AccountBlock
       status: :ok
     end
 
+    def doc_verify
+      @doc = Doctor.find(@token.id)
+      if @doc.present?
+        params["documents"].each do |image|
+          @doc.documents.attach(image)
+        end
+        @doc.save
+        if @doc.documents.present?
+          render json: DoctorSerializer.new(@doc).serializable_hash,status: :ok
+        else
+          render json: {  status: 422, message: 'Doctor image not attached.' }, status: :unprocessable_entity
+        end
+      else
+        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
+      end
+    end
+
     def doctor_profile_image
       @doc = Doctor.find(@token.id)
       if @doc.present?

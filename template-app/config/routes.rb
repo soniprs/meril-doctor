@@ -19,7 +19,6 @@ Rails.application.routes.draw do
     get 'get_patients_list', to: 'patients#get_patients_list'
     put 'patient_profile_photo', to: 'patients#patient_profile_photo'
     get 'patient_detail', to: 'patients#patient_detail'
-    
    end
 
 
@@ -39,5 +38,6 @@ Rails.application.routes.draw do
     put 'update_doctor', to: 'doctors#update_doctor'
     get 'show', to: 'doctors#show'
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
+    post 'doc_verify', to: 'doctors#doc_verify'
   end
  end
