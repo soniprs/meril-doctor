@@ -47,4 +47,13 @@ Rails.application.routes.draw do
     put 'upload_family_member_photo', to: 'family_members#upload_family_member_photo'
   end
 
+  #<---------------allergy routes----------------------------------------->
+  namespace :bx_block_custom_form do
+    post 'create_allergy', to: 'allergies#create_allergy' 
+    get 'search_allergy', to: 'allergies#search_allergy'
+    delete 'delete_allergy', to: 'allergies#delete_allergy'
+    put 'update_allergy', to: 'allergies#update_allergy'
+    get 'get_allergies_list', to: 'allergies#get_allergies_list'
+  end
+
 end

@@ -3,7 +3,8 @@ module AccountBlock
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ,:update_profile, :patient_profile_photo]
+    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ]
+    before_action :find_account, only: [:update_profile,:patient_detail,:patient_profile_photo]
 
     def create_otp
 
@@ -118,8 +119,6 @@ module AccountBlock
 
     def update_profile
       profile_params = jsonapi_deserialize(params)
-      @patient = AccountBlock::Patient.find(@token.id)
-
       if @patient.update(profile_params)
         render json: PatientSerializer.new(@patient).serializable_hash, status: 200
       else
@@ -138,7 +137,6 @@ module AccountBlock
     end
 
     def patient_detail
-       @patient = AccountBlock::Patient.find(params[:id])
       if @patient.present?
         render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
         }).serializable_hash, status: :ok
@@ -148,7 +146,6 @@ module AccountBlock
     end
 
     def patient_profile_photo
-     @patient = AccountBlock::Patient.find(@token.id)
       if @patient.present?
         @patient.profile_photo.attach(params["profile_photo"])
         @patient.save
@@ -176,5 +173,10 @@ module AccountBlock
     def encode(id)
       BuilderJsonWebToken.encode id
     end
+
+    def find_account
+      @patient = AccountBlock::Patient.find(params[:id])
+    end
+
   end
 end
