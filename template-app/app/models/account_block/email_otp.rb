@@ -12,7 +12,7 @@ module AccountBlock
     attr_reader :phone
 
     def generate_pin_and_valid_date
-      self.pin         = rand(1_000..9_999)
+      self.pin         = rand(1_00000..9_99999)
       self.valid_until = Time.current + 5.minutes
     end
 
