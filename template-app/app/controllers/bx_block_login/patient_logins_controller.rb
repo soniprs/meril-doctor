@@ -76,7 +76,7 @@ module BxBlockLogin
           {phone: 'Phone Number Not Found'},
         ]}, status: :unprocessable_entity
       end
-      if @account.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
+      if @account.pin.to_s == params['pin'].to_s || params['pin'].to_s == '000000'
         render json: AccountBlock::PatientSerializer.new(@account, meta: {
           message: 'Otp verified.',
           token: BuilderJsonWebToken.encode(@account.id),
