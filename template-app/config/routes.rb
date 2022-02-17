@@ -19,11 +19,8 @@ Rails.application.routes.draw do
     get 'get_patients_list', to: 'patients#get_patients_list'
     put 'patient_profile_photo', to: 'patients#patient_profile_photo'
     get 'patient_detail', to: 'patients#patient_detail'
-    
    end
-
-
-
+  
   # <----------Doctor Routes-------------------------------------->
   namespace :bx_block_login  do
     # post 'doctor_login', to: 'doctor_logins#doctor_login'
@@ -38,4 +35,14 @@ Rails.application.routes.draw do
     get 'search_doctor', to: 'doctors#search_doctor'
     put 'update_doctor', to: 'doctors#update_doctor'
   end
- end
+
+  #<---------------family member routes----------------------------------------->
+  namespace :account_block do
+    post 'create_family_member', to: 'family_members#create_family_member' 
+    get 'get_family_member_list', to: 'family_members#get_family_member_list'
+    delete 'delete_family_member', to: 'family_members#delete_family_member'
+    put 'update_family_member', to: 'family_members#update_family_member'
+    put 'upload_family_member_photo', to: 'family_members#upload_family_member_photo'
+  end
+
+end

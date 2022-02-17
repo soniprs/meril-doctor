@@ -123,7 +123,7 @@ module AccountBlock
       if @patient.update(profile_params)
         render json: PatientSerializer.new(@patient).serializable_hash, status: 200
       else
-        render json: { message: @doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+        render json: { message: @patient.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
       end
     end
 
