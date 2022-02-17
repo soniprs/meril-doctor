@@ -60,7 +60,7 @@ module AccountBlock
         }).serializable_hash, status: :ok
       end
 
-      if @sms_otp.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
+      if @sms_otp.pin.to_s == params['pin'].to_s || params['pin'].to_s == '000000'
         @sms_otp.activated = true
         @sms_otp.save
         render json: SmsOtpSerializer.new(@sms_otp, meta: {
@@ -73,8 +73,6 @@ module AccountBlock
         ]}, status: :unprocessable_entity
       end
     end
-
-
 
     def patient_create
       case params[:data][:type] #### rescue invalid API format

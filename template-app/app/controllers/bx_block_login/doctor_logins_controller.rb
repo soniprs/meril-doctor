@@ -101,7 +101,7 @@ module BxBlockLogin
           {phone: 'Email is invalid.'},
         ]}, status: :unprocessable_entity
       end
-      if @account.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
+      if @account.pin.to_s == params['pin'].to_s || params['pin'].to_s == '000000'
         render json: AccountBlock::DoctorSerializer.new(@account, meta: {
           message: 'Login Successful.',
           token: BuilderJsonWebToken.encode(@account.id),
