@@ -1,8 +1,9 @@
 module AccountBlock
   class PatientsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
+    include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create]
+    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ,:update_profile, :patient_profile_photo]
 
     def create_otp
 
@@ -112,6 +113,53 @@ module AccountBlock
         render json: {errors: [
           {account: 'Invalid Account Type'},
         ]}, status: :unprocessable_entity
+      end
+    end
+
+    def update_profile
+      profile_params = jsonapi_deserialize(params)
+      @patient = AccountBlock::Patient.find(@token.id)
+
+      if @patient.update(profile_params)
+        render json: PatientSerializer.new(@patient).serializable_hash, status: 200
+      else
+        render json: { message: @doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+      end
+    end
+
+    def get_patients_list
+      @patients = Patient.all
+      if @patients.present?
+        render json: PatientSerializer.new(@patients, meta: {message: 'List of Patients.'
+        }).serializable_hash, status: :ok
+      else
+        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
+      end
+    end
+
+    def patient_detail
+       @patient = AccountBlock::Patient.find(params[:id])
+      if @patient.present?
+        render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
+        }).serializable_hash, status: :ok
+      else
+        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
+      end
+    end
+
+    def patient_profile_photo
+     @patient = AccountBlock::Patient.find(@token.id)
+      if @patient.present?
+        @patient.profile_photo.attach(params["profile_photo"])
+        @patient.save
+        patient_image = @patient.try(:profile_photo)
+        if @patient.profile_photo.present?
+          render json: { status: 200, file_path: rails_blob_url(patient_image) }
+        else
+          render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
+        end
+      else
+        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
       end
     end
 

@@ -1,7 +1,8 @@
 module AccountBlock
   class Patient < ApplicationRecord
-     self.table_name = :patients
+    self.table_name = :patients
     validates :full_phone_number, presence: true,uniqueness: true
+    has_one_attached :profile_photo
 
     def update_otp
       update(pin: rand(1_000..9_999))
