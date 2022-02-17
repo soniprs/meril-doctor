@@ -1,18 +1,22 @@
 module AccountBlock
   class DoctorsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
-    before_action :validate_json_web_token, only: [:doctor_verify_otp, :doctor_create, :update_doctor]
+    before_action :validate_json_web_token, only: [:doctor_verify_otp, :doctor_create, :show, :doctor_profile_image, :doc_verify, :update_doctor]
 
     def create_otp_doctor
       json_params = jsonapi_deserialize(params)
       account = Doctor.find_by(email: json_params['email'].downcase,activated: true)
       return render json: {errors: [{account: 'Doctor already activated',  }]}, status: :unprocessable_entity unless account.nil?
-
-      @email_otp = AccountBlock::EmailOtp.new(jsonapi_deserialize(params))
+      @email_otp = AccountBlock::EmailOtp.find_by_email(json_params["email"])
+      if @email_otp.present?
+        @email_otp.generate_pin_and_valid_date
+      else
+        @email_otp = AccountBlock::EmailOtp.new(jsonapi_deserialize(params))
+      end
       if @email_otp.save
         DoctorSentOtpMailer
-        .with(otp: @email_otp, host: request.base_url)
-        .activation_email_doctor.deliver
+        .with(account: @email_otp, host: request.base_url)
+        .send_otp_mailer.deliver
         render json: EmailOtpSerializer.new(@email_otp, meta: {
             token: BuilderJsonWebToken.encode(@email_otp.id),
           }).serializable_hash, status: :created
@@ -90,6 +94,28 @@ module AccountBlock
         render json: {errors: [{message: 'Not found any Doctor.'}]}, status: :ok
       end
     end
+
+    def show
+      @doctor = Doctor.find(params[:id])
+      render json: DoctorSerializer.new(@doctor).serializable_hash,
+      status: :ok
+    end
+
+    def doctor_profile_image
+      @doc = Doctor.find(@token.id)
+      if @doc.present?
+        @doc.profile_image.attach(params[:profile_image])
+        @doc.save
+        doctor_image = @doc.try(:profile_image)
+        if @doc.profile_image.present?
+          render json: DoctorSerializer.new(@doc).serializable_hash, status: 200
+        else
+          render json: {  status: 422, message: 'Doctor image not attached.' }, status: :unprocessable_entity
+        end
+      else
+        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
+      end
+   end
     
     def update_doctor
       doctor_params = jsonapi_deserialize(params)
