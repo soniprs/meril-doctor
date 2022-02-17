@@ -79,7 +79,7 @@ module BxBlockLogin
           }, status: :unprocessable_entity if account.nil?
         if account.update_otp
          # account.send_pin_via_sms
-         DoctorSentOtpMailer
+         AccountBlock::DoctorSentOtpMailer
         .with(account: account, host: request.base_url)
         .send_otp_mailer.deliver
         render json: BxBlockForgotPassword::SmsOtpSerializer.new(account, meta: {token: encode(account.id), message: "Otp sent."}).serializable_hash, status: :ok

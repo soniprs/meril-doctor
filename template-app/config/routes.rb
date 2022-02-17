@@ -38,6 +38,6 @@ Rails.application.routes.draw do
     put 'update_doctor', to: 'doctors#update_doctor'
     get 'show', to: 'doctors#show'
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
-    post 'doc_verify', to: 'doctors#doc_verify'
+    post 'upload_documents', to: 'doctors#upload_documents'
   end
  end
