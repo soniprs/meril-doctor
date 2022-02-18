@@ -2,6 +2,7 @@ module MallPromoCodes
 end
 
 ActiveAdmin.register BxBlockPromoCodes::MallPromoCode do
+  menu false
   permit_params :promo_code_id, :mall_id
 
   form do |f|

@@ -19,7 +19,6 @@ module BxBlockCustomForm
 
 
     def search_allergy
-      
       @allergy = BxBlockCustomForm::Allergy.where('full_name ILIKE :search', search: "%#{search_params[:query]}%")
       if @allergy.present?
         render json: BxBlockCustomForm::AllergySerializer.new(@allergy, meta: {message: 'List of allergy.'
@@ -70,17 +69,6 @@ module BxBlockCustomForm
     end
 
     private
-
-    def find_account
-      @patient = AccountBlock::Patient.find(params[:id])
-      if @patient.present?
-       
-       else
-        render json: {errors: [{message: 'Not found any patient.'}]}, status: :ok
-      end
-    end
-
-
     def find_account
       @patient = AccountBlock::Patient.find(params[:id])
       rescue ActiveRecord::RecordNotFound => e

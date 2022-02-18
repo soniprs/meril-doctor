@@ -1,0 +1,11 @@
+$skinActiveColor: #e7aa3c;
+
+
+@import "active_admin/mixins";
+@import "active_admin/base";
+@import "active_admin_flat_skin";
+@import "font-awesome";
+
+#header.header .site_title {
+  background-color: #e7aa3c;
+}
