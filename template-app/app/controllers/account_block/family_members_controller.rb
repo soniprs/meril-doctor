@@ -7,6 +7,7 @@ module AccountBlock
     
     def create_family_member
       family_member_params = jsonapi_deserialize(params)
+      @family_members =  @patient.family_members
       @patient_family_member = @family_members.new(family_member_params)
       if @patient_family_member.save
         render json: FamilyMemberSerializer.new(@patient_family_member).serializable_hash, status: 200
@@ -17,6 +18,7 @@ module AccountBlock
   
 
     def get_family_member_list
+      @family_members =  @patient.family_members
       if @family_members.present?
         render json: FamilyMemberSerializer.new(@family_members, meta: {message: 'List of Family Members.'
         }).serializable_hash, status: :ok
@@ -78,13 +80,13 @@ module AccountBlock
       BuilderJsonWebToken.encode id
     end
 
+
     def find_account
       @patient = AccountBlock::Patient.find(params[:id])
-      if @patient.present?
-        @family_members =  @patient.family_members
-      else
-        render json: {errors: [{message: 'Not found any patient.'}]}, status: :ok
-      end
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Patient Not Found'},
+        ]}, status: :unprocessable_entity
     end
 
   end

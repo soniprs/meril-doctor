@@ -135,26 +135,17 @@ module AccountBlock
     end
 
     def patient_detail
-      if @patient.present?
-        render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
-        }).serializable_hash, status: :ok
-      else
-        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
-      end
+      render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
     end
 
     def patient_profile_photo
-      if @patient.present?
-        @patient.profile_photo.attach(params["profile_photo"])
-        @patient.save
-        patient_image = @patient.try(:profile_photo)
-        if @patient.profile_photo.present?
-          render json: { status: 200, file_path: rails_blob_url(patient_image) }
-        else
-          render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
-        end
+      @patient.profile_photo.attach(params["profile_photo"])
+      patient_image = @patient.try(:profile_photo)
+      if @patient.profile_photo.present?
+        render json: { status: 200, file_path: rails_blob_url(patient_image) }
       else
-        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
+        render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
       end
     end
 
@@ -174,6 +165,10 @@ module AccountBlock
 
     def find_account
       @patient = AccountBlock::Patient.find(params[:id])
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Patient Not Found'},
+        ]}, status: :unprocessable_entity
     end
 
   end

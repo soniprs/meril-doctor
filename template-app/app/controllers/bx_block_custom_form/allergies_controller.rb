@@ -8,6 +8,7 @@ module BxBlockCustomForm
 
     def create_allergy
       allergy_params = jsonapi_deserialize(params)
+      @allergies =  @patient.allergies
       @patient_allergy = @allergies.new(allergy_params)
       if @patient_allergy.save
         render json: BxBlockCustomForm::AllergySerializer.new(@patient_allergy).serializable_hash, status: 200
@@ -18,6 +19,7 @@ module BxBlockCustomForm
 
 
     def search_allergy
+      
       @allergy = BxBlockCustomForm::Allergy.where('full_name ILIKE :search', search: "%#{search_params[:query]}%")
       if @allergy.present?
         render json: BxBlockCustomForm::AllergySerializer.new(@allergy, meta: {message: 'List of allergy.'
@@ -28,6 +30,7 @@ module BxBlockCustomForm
     end
 
     def get_allergies_list
+      @allergies =  @patient.allergies
       if @allergies.present?
         render json: BxBlockCustomForm::AllergySerializer.new(@allergies, meta: {message: 'List of Allergies '
         }).serializable_hash, status: :ok
@@ -71,11 +74,21 @@ module BxBlockCustomForm
     def find_account
       @patient = AccountBlock::Patient.find(params[:id])
       if @patient.present?
-        @allergies =  @patient.allergies
+       
        else
         render json: {errors: [{message: 'Not found any patient.'}]}, status: :ok
       end
     end
+
+
+    def find_account
+      @patient = AccountBlock::Patient.find(params[:id])
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Patient Not Found'},
+        ]}, status: :unprocessable_entity
+    end
+
 
     def search_params
       params.permit(:query)
