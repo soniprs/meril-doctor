@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     get 'get_patients_list', to: 'patients#get_patients_list'
     put 'patient_profile_photo', to: 'patients#patient_profile_photo'
     get 'patient_detail', to: 'patients#patient_detail'
+    delete 'delete_patient', to: 'patients#delete_patient'
    end
   
   # <----------Doctor Routes-------------------------------------->
@@ -32,10 +33,15 @@ Rails.application.routes.draw do
     post 'create_otp_doctor', to: 'doctors#create_otp_doctor'
     post 'doctor_verify_otp', to: 'doctors#doctor_verify_otp'
     post 'doctor_create', to: 'doctors#doctor_create'
-    get 'search_doctor', to: 'doctors#search_doctor'
     put 'update_doctor', to: 'doctors#update_doctor'
     get 'show', to: 'doctors#show'
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
+  end
+
+#<---------------search doctor routes----------------------------------------->
+  namespace :account_block do
+    get 'search_doctor', to: 'searchs#search_doctor'
+    get 'search_doctor_categorywise', to: 'searchs#search_doctor_categorywise'
   end
 
   #<---------------family member routes----------------------------------------->

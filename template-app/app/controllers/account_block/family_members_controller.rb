@@ -2,7 +2,8 @@ module AccountBlock
   class FamilyMembersController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
-
+    
+    before_action :validate_json_web_token
     before_action :find_account, only: [:create_family_member,:get_family_member_list]
     
     def create_family_member
@@ -75,11 +76,6 @@ module AccountBlock
     end
 
     private
-
-    def encode(id)
-      BuilderJsonWebToken.encode id
-    end
-
 
     def find_account
       @patient = AccountBlock::Patient.find(params[:id])

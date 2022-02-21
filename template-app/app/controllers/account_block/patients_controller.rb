@@ -3,8 +3,8 @@ module AccountBlock
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ]
-    before_action :find_account, only: [:update_profile,:patient_detail,:patient_profile_photo]
+    before_action :validate_json_web_token, only: [:verify_otp, :patient_create , :update_profile,:patient_detail,:get_patients_list,:patient_profile_photo ,:delete_patient ]
+    before_action :find_account, only: [:update_profile,:patient_detail,:patient_profile_photo,:delete_patient]
 
     def create_otp
 
@@ -146,6 +146,15 @@ module AccountBlock
         render json: { status: 200, file_path: rails_blob_url(patient_image) }
       else
         render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
+      end
+    end
+
+
+    def delete_patient
+      if @patient&.destroy  
+        render json: {status: true, message: "Deleted Successfully.", success: true}
+      else
+        render json: {status: true, message: "Unable to delete.", success: true}
       end
     end
 

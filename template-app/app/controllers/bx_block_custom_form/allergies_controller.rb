@@ -3,9 +3,8 @@ module BxBlockCustomForm
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
     
-    skip_before_action :validate_json_web_token
     before_action :find_account, only: [:create_allergy, :get_allergies_list]
-
+    
     def create_allergy
       allergy_params = jsonapi_deserialize(params)
       @allergies =  @patient.allergies
