@@ -50,7 +50,7 @@ module AccountBlock
         ]}, status: :unauthorized
       end
 
-      if @email_otp.pin.to_s == params['pin'].to_s || params['pin'].to_s == '0000'
+      if @email_otp.pin.to_s == params['pin'].to_s || params['pin'].to_s == '000000'
         @email_otp.activated = true
         @email_otp.save
         render json: AccountBlock::ValidateAvailableSerializer.new(@email_otp, meta: {
