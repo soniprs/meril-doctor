@@ -40,4 +40,11 @@ Rails.application.routes.draw do
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
     post 'upload_documents', to: 'doctors#upload_documents'
   end
+
+  namespace :bx_block_posts do
+    post 'create', to: 'announcements#create'
+    get 'show', to: 'announcements#show'
+    put 'update', to: 'announcements#update'
+    delete 'delete', to: 'announcements#delete'    
+  end
  end
