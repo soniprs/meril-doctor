@@ -19,6 +19,7 @@ end
 unless Subscription::Load.is_loaded_from_gem
   ActiveAdmin.register BxBlockCustomUserSubs::Subscription do
     menu label: "Subscription"
+    menu false
     permit_params :name, :description, :valid_up_to, :price,:image
 
     form do |f|

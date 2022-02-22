@@ -3,6 +3,7 @@ end
 
 ActiveAdmin.register BxBlockPromoCodes::RestaurantPromoCode do
   permit_params :promo_code_id, :restaurant_id
+  menu false
 
   form do |f|
     f.inputs do

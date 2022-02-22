@@ -86,15 +86,6 @@ module AccountBlock
       end
     end
 
-    def search_doctor
-      @doctors = AccountBlock::Doctor.where(activated: true).where('full_name ILIKE :search', search: "%#{search_params[:query]}%")
-      if @doctors.present?
-        render json: AccountBlock::DoctorSerializer.new(@doctors, meta: {message: 'List of doctors.'
-        }).serializable_hash, status: :ok
-      else
-        render json: {errors: [{message: 'Not found any Doctor.'}]}, status: :ok
-      end
-    end
 
     def show
       render json: DoctorSerializer.new(@doc).serializable_hash,
@@ -143,9 +134,6 @@ module AccountBlock
       BuilderJsonWebToken.encode id
     end
 
-    def search_params
-      params.permit(:query)
-    end
 
     def find_account
       @doc = Doctor.find(params[:id])

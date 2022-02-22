@@ -16,6 +16,7 @@ module AccountBlock
       :medical_representative_name,
       :representative_contact_no,
       :experience,
+      :doctor_category,
       :pin,
     ]
 
