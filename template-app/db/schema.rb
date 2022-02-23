@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_16_100351) do
+ActiveRecord::Schema.define(version: 2022_02_21_095644) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,6 +184,25 @@ ActiveRecord::Schema.define(version: 2022_02_16_100351) do
     t.integer "seller_account_id"
     t.datetime "start_at"
     t.datetime "expire_at"
+  end
+
+  create_table "allergies", force: :cascade do |t|
+    t.string "full_name"
+    t.bigint "patient_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_allergies_on_patient_id"
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "tags"
+    t.string "status"
+    t.binary "image"
+    t.integer "doctor_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "arrival_windows", force: :cascade do |t|
@@ -495,6 +514,7 @@ ActiveRecord::Schema.define(version: 2022_02_16_100351) do
     t.integer "pin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "doctor_category"
   end
 
   create_table "email_otps", force: :cascade do |t|

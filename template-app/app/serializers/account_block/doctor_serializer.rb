@@ -28,9 +28,33 @@ module AccountBlock
       end
     end
 
-    attribute :documents do |object|
-      if object.documents.attached?
-        object.documents.map { |image|
+    attribute :identity_details do |object|
+      if object.identity_details.attached?
+        object.identity_details.map { |image|
+          Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true )
+        }
+      end
+    end
+
+    attribute :degree_deatils do |object|
+      if object.degree_deatils.attached?
+        object.degree_deatils.map { |image|
+          Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true )
+        }
+      end
+    end
+
+    attribute :registration_details do |object|
+      if object.registration_details.attached?
+        object.registration_details.map { |image|
+          Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true )
+        }
+      end
+    end
+
+    attribute :clinic_details do |object|
+      if object.clinic_details.attached?
+        object.clinic_details.map { |image|
           Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true )
         }
       end
