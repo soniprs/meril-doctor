@@ -10,7 +10,7 @@ module AccountBlock
     has_many :announcements, class_name: 'BxBlockPosts::Announcement'
     
     def update_otp
-      update(pin: rand(1_000..9_999))
+      update(pin: rand(1_00000..9_99999))
     end
   end
 end
