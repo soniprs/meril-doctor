@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_09_121744) do
+ActiveRecord::Schema.define(version: 2022_02_21_095644) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,6 +184,25 @@ ActiveRecord::Schema.define(version: 2022_02_09_121744) do
     t.integer "seller_account_id"
     t.datetime "start_at"
     t.datetime "expire_at"
+  end
+
+  create_table "allergies", force: :cascade do |t|
+    t.string "full_name"
+    t.bigint "patient_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_allergies_on_patient_id"
+  end
+
+  create_table "announcements", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.text "tags"
+    t.string "status"
+    t.binary "image"
+    t.integer "doctor_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "arrival_windows", force: :cascade do |t|
@@ -495,6 +514,7 @@ ActiveRecord::Schema.define(version: 2022_02_09_121744) do
     t.integer "pin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "doctor_category"
   end
 
   create_table "email_otps", force: :cascade do |t|
@@ -505,6 +525,19 @@ ActiveRecord::Schema.define(version: 2022_02_09_121744) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "full_name"
+  end
+
+  create_table "family_members", force: :cascade do |t|
+    t.string "full_name"
+    t.string "gender"
+    t.string "relation"
+    t.date "date_of_birth"
+    t.decimal "weight"
+    t.string "blood_group"
+    t.bigint "patient_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_family_members_on_patient_id"
   end
 
   create_table "follows", force: :cascade do |t|
@@ -697,6 +730,7 @@ ActiveRecord::Schema.define(version: 2022_02_09_121744) do
     t.integer "pin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "location"
   end
 
   create_table "payment_admins", force: :cascade do |t|
@@ -1023,6 +1057,7 @@ ActiveRecord::Schema.define(version: 2022_02_09_121744) do
   add_foreign_key "delivery_address_orders", "orders"
   add_foreign_key "delivery_addresses", "accounts"
   add_foreign_key "dimensions", "items"
+  add_foreign_key "family_members", "patients"
   add_foreign_key "follows", "accounts"
   add_foreign_key "follows", "accounts", column: "current_user_id"
   add_foreign_key "items", "shipments"

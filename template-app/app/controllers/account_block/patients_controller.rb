@@ -3,7 +3,8 @@ module AccountBlock
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create ,:update_profile, :patient_profile_photo]
+    before_action :validate_json_web_token, except: [:create_otp]
+    before_action :find_account, only: [:update_patient_profile, :patient_detail, :delete_patient]
 
     def create_otp
 
@@ -116,12 +117,19 @@ module AccountBlock
 
     def update_profile
       profile_params = jsonapi_deserialize(params)
-      @patient = AccountBlock::Patient.find(@token.id)
+      if current_patient.update(profile_params)
+        render json: PatientSerializer.new(current_patient).serializable_hash, status: 200
+      else
+        render json: { message: current_patient.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+      end
+    end
 
+    def update_patient_profile
+      profile_params = jsonapi_deserialize(params)
       if @patient.update(profile_params)
         render json: PatientSerializer.new(@patient).serializable_hash, status: 200
       else
-        render json: { message: @doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+        render json: { message: @patient.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
       end
     end
 
@@ -136,29 +144,37 @@ module AccountBlock
     end
 
     def patient_detail
-       @patient = AccountBlock::Patient.find(params[:id])
-      if @patient.present?
-        render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
-        }).serializable_hash, status: :ok
-      else
-        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
-      end
+      render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
+    end
+
+    def current_patient_detail
+      render json: PatientSerializer.new(current_patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
     end
 
     def patient_profile_photo
-     @patient = AccountBlock::Patient.find(@token.id)
-      if @patient.present?
-        @patient.profile_photo.attach(params["profile_photo"])
-        @patient.save
-        patient_image = @patient.try(:profile_photo)
-        if @patient.profile_photo.present?
-          render json: { status: 200, file_path: rails_blob_url(patient_image) }
+      if params[:profile_photo].present?
+        if current_patient.profile_photo.attach(params["profile_photo"])
+          render json: PatientSerializer.new(current_patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
         else
-          render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
+          render json: PatientSerializer.new(current_patient, meta: {message: 'Something went wrong while update the profile photo'
+      }).serializable_hash, status: :unprocessable_entity
         end
       else
-        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
+        render json: {  status: 422, message: 'Please select photo.' }, status: :unprocessable_entity
       end
+    end
+
+
+    def delete_patient
+      if @patient&.destroy 
+        render json: {status: true, message: "Deleted Successfully.", success: true}
+      else
+        render json: {status: true, message: "Unable to delete.", success: true}
+      end
+
     end
 
     def format_activerecord_errors(errors)
@@ -174,5 +190,14 @@ module AccountBlock
     def encode(id)
       BuilderJsonWebToken.encode id
     end
+
+    def find_account
+      @patient = AccountBlock::Patient.find(params[:id])
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Patient Not Found'},
+        ]}, status: :unprocessable_entity
+    end
+
   end
 end

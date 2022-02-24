@@ -1,12 +1,13 @@
 module AccountBlock
   class DoctorsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
-    before_action :validate_json_web_token, only: [:doctor_verify_otp, :doctor_create, :show, :doctor_profile_image, :doc_verify, :update_doctor]
+    before_action :validate_json_web_token, except: [:create_otp_doctor]
+    before_action :find_account, only: [:show_doctor]
 
     def create_otp_doctor
       json_params = jsonapi_deserialize(params)
       account = Doctor.find_by(email: json_params['email'].downcase,activated: true)
-      return render json: {errors: [{account: 'Doctor already activated',  }]}, status: :unprocessable_entity unless account.nil?
+      return render json: {errors: [{account: 'Email Already present.',  }]}, status: :unprocessable_entity unless account.nil?
       @email_otp = AccountBlock::EmailOtp.find_by_email(json_params["email"])
       if @email_otp.present?
         @email_otp.generate_pin_and_valid_date
@@ -31,7 +32,7 @@ module AccountBlock
         @email_otp = EmailOtp.find(@token.id)
       rescue ActiveRecord::RecordNotFound => e
         return render json: {errors: [
-          {phone: 'Phone Number Not Found'},
+          {email: 'Email Not Found'},
         ]}, status: :unprocessable_entity
       end
       render json: {errors: [{otp: 'Invalid OTP'},]}, status: :unprocessable_entity and return if params[:pin].blank?
@@ -85,46 +86,55 @@ module AccountBlock
       end
     end
 
-    def search_doctor
-      @doctors = AccountBlock::Doctor.where(activated: true).where('full_name ILIKE :search', search: "%#{search_params[:query]}%")
-      if @doctors.present?
-        render json: AccountBlock::DoctorSerializer.new(@doctors, meta: {message: 'List of doctors.'
-        }).serializable_hash, status: :ok
-      else
-        render json: {errors: [{message: 'Not found any Doctor.'}]}, status: :ok
-      end
-    end
-
-    def show
-      @doctor = Doctor.find(params[:id])
-      render json: DoctorSerializer.new(@doctor).serializable_hash,
+    def show_doctor
+      render json: DoctorSerializer.new(@doc).serializable_hash,
       status: :ok
     end
 
-    def doctor_profile_image
-      @doc = Doctor.find(@token.id)
-      if @doc.present?
-        @doc.profile_image.attach(params[:profile_image])
-        @doc.save
-        doctor_image = @doc.try(:profile_image)
-        if @doc.profile_image.present?
-          render json: DoctorSerializer.new(@doc).serializable_hash, status: 200
-        else
-          render json: {  status: 422, message: 'Doctor image not attached.' }, status: :unprocessable_entity
-        end
-      else
-        render json: { message: 'Invalid data format', status: 422 }, status: :unprocessable_entity
-      end
-   end
-    
-    def update_doctor
-      doctor_params = jsonapi_deserialize(params)
-      @doctor = AccountBlock::Doctor.find(@token.id)
+    def show
+      render json: DoctorSerializer.new(current_doctor).serializable_hash,
+      status: :ok
+    end
 
-      if @doctor.update(doctor_params)
-        render json: DoctorSerializer.new(@doctor).serializable_hash, status: 200
+    def upload_documents
+      if params[:identity_details].present?
+        params[:identity_details].each do |image|
+          current_doctor.identity_details.attach(image)
+        end
+      end
+      if params[:degree_deatils].present?
+        params[:degree_deatils].each do |image|
+          current_doctor.degree_deatils.attach(image)
+        end
+      end
+      if params[:registration_details].present?
+        params[:registration_details].each do |image|
+          current_doctor.registration_details.attach(image)
+        end
+      end
+      if params[:clinic_details].present?
+        params[:clinic_details].each do |image|
+          current_doctor.clinic_details.attach(image)
+        end
+      end
+      render json: DoctorSerializer.new(current_doctor).serializable_hash,status: :ok
+    end
+
+    def doctor_profile_image
+      if current_doctor.present?
+        current_doctor.profile_image.attach(params[:profile_image])
+          render json: DoctorSerializer.new(current_doctor).serializable_hash, status: 200
       else
-        render json: { message: @doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+        render json: { message: 'Doctor not found', status: 422 }, status: :unprocessable_entity
+      end
+    end
+    
+    def update
+      doctor_params = jsonapi_deserialize(params)
+      if current_doctor.update(doctor_params)
+        render json: DoctorSerializer.new(current_doctor).serializable_hash, status: 200
+      else
+        render json: { message: current_doctor.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
       end
     end
 
@@ -141,9 +151,12 @@ module AccountBlock
       BuilderJsonWebToken.encode id
     end
 
-    def search_params
-      params.permit(:query)
+    def find_account
+      @doc = Doctor.find(params[:id])
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Account Not Found'},
+        ]}, status: :unprocessable_entity
     end
-
   end
 end
