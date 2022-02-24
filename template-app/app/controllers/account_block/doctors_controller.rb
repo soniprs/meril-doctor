@@ -7,7 +7,7 @@ module AccountBlock
     def create_otp_doctor
       json_params = jsonapi_deserialize(params)
       account = Doctor.find_by(email: json_params['email'].downcase,activated: true)
-      return render json: {errors: [{account: 'Doctor already activated',  }]}, status: :unprocessable_entity unless account.nil?
+      return render json: {errors: [{account: 'Email Already present.',  }]}, status: :unprocessable_entity unless account.nil?
       @email_otp = AccountBlock::EmailOtp.find_by_email(json_params["email"])
       if @email_otp.present?
         @email_otp.generate_pin_and_valid_date
