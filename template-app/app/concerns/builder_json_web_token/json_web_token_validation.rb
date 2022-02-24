@@ -9,6 +9,16 @@ module BuilderJsonWebToken
 
     private
 
+    def current_patient
+      begin
+        @current_patient = AccountBlock::Patient.find(@token.id)
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+            {message: 'Please login again.'},
+        ]}, status: :unprocessable_entity
+      end
+    end
+    
     def validate_json_web_token
       token = request.headers[:token] || params[:token]
 

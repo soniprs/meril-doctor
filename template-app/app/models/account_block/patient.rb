@@ -8,7 +8,7 @@ module AccountBlock
 
 
     def update_otp
-      update(pin: rand(1_000..9_999))
+      update(pin: rand(1_00000..9_99999))
     end
 
     def send_pin_via_sms

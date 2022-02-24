@@ -15,10 +15,12 @@ Rails.application.routes.draw do
     post 'create_otp', to: 'patients#create_otp'
     post 'verify_otp', to: 'patients#verify_otp'
     post 'patient_create', to: 'patients#patient_create'
-    put 'update_profile', to: 'patients#update_profile'
+    post 'update_profile', to: 'patients#update_profile'
+    post 'update_patient_profile', to: 'patients#update_patient_profile'
     get 'get_patients_list', to: 'patients#get_patients_list'
     put 'patient_profile_photo', to: 'patients#patient_profile_photo'
     get 'patient_detail', to: 'patients#patient_detail'
+    get 'current_patient_detail', to: 'patients#current_patient_detail'
     delete 'delete_patient', to: 'patients#delete_patient'
    end
   

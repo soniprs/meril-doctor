@@ -3,8 +3,8 @@ module AccountBlock
     include BuilderJsonWebToken::JsonWebTokenValidation
     include Rails.application.routes.url_helpers
 
-    before_action :validate_json_web_token, only: [:verify_otp, :patient_create , :update_profile,:patient_detail,:get_patients_list,:patient_profile_photo ,:delete_patient ]
-    before_action :find_account, only: [:update_profile,:patient_detail,:patient_profile_photo,:delete_patient]
+    before_action :validate_json_web_token, except: [:create_otp]
+    before_action :find_account, only: [:update_patient_profile, :patient_detail, :delete_patient]
 
     def create_otp
 
@@ -117,6 +117,15 @@ module AccountBlock
 
     def update_profile
       profile_params = jsonapi_deserialize(params)
+      if current_patient.update(profile_params)
+        render json: PatientSerializer.new(current_patient).serializable_hash, status: 200
+      else
+        render json: { message: current_patient.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+      end
+    end
+
+    def update_patient_profile
+      profile_params = jsonapi_deserialize(params)
       if @patient.update(profile_params)
         render json: PatientSerializer.new(@patient).serializable_hash, status: 200
       else
@@ -139,23 +148,33 @@ module AccountBlock
       }).serializable_hash, status: :ok
     end
 
+    def current_patient_detail
+      render json: PatientSerializer.new(current_patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
+    end
+
     def patient_profile_photo
-      @patient.profile_photo.attach(params["profile_photo"])
-      patient_image = @patient.try(:profile_photo)
-      if @patient.profile_photo.present?
-        render json: { status: 200, file_path: rails_blob_url(patient_image) }
+      if params[:profile_photo].present?
+        if current_patient.profile_photo.attach(params["profile_photo"])
+          render json: PatientSerializer.new(current_patient, meta: {message: 'Patient Detail.'
+      }).serializable_hash, status: :ok
+        else
+          render json: PatientSerializer.new(current_patient, meta: {message: 'Something went wrong while update the profile photo'
+      }).serializable_hash, status: :unprocessable_entity
+        end
       else
-        render json: {  status: 422, message: 'Patient image not attached.' }, status: :unprocessable_entity
+        render json: {  status: 422, message: 'Please select photo.' }, status: :unprocessable_entity
       end
     end
 
 
     def delete_patient
-      if @patient&.destroy  
+      if @patient&.destroy 
         render json: {status: true, message: "Deleted Successfully.", success: true}
       else
         render json: {status: true, message: "Unable to delete.", success: true}
       end
+
     end
 
     def format_activerecord_errors(errors)
