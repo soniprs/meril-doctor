@@ -29,6 +29,14 @@ module BuilderJsonWebToken
       end
     end
 
+    def current_doctor
+      @current_doctor = AccountBlock::Doctor.find(@token.id)
+      rescue ActiveRecord::RecordNotFound => e
+        return render json: {errors: [
+          {error: 'Account Not Found'},
+        ]}, status: :unprocessable_entity
+    end
+
     def handle_exception(exception)
       # order matters here
       # JWT::ExpiredSignature appears to be a subclass of JWT::DecodeError

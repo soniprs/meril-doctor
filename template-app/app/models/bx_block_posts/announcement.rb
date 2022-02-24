@@ -4,5 +4,6 @@ module BxBlockPosts
     include ActiveStorageSupport::SupportForBase64
     belongs_to :doctor, class_name: 'AccountBlock::Doctor'
     has_one_base64_attached :avatar
+    validates :title, presence: true
   end
 end

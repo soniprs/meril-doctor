@@ -35,8 +35,9 @@ Rails.application.routes.draw do
     post 'create_otp_doctor', to: 'doctors#create_otp_doctor'
     post 'doctor_verify_otp', to: 'doctors#doctor_verify_otp'
     post 'doctor_create', to: 'doctors#doctor_create'
-    put 'update_doctor', to: 'doctors#update_doctor'
+    put 'update', to: 'doctors#update'
     get 'show', to: 'doctors#show'
+    get 'show_doctor', to: 'doctors#show_doctor'
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
     post 'upload_documents', to: 'doctors#upload_documents'
   end
