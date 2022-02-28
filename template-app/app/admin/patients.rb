@@ -3,6 +3,21 @@ ActiveAdmin.register AccountBlock::Patient, as: "Patient"  do
   actions :all, except: [:destroy, :new, :edit]
    menu priority: 1
 
+    index do
+      selectable_column
+      id_column
+      column :full_name
+      column :full_phone_number
+      column :activated
+      column :created_at
+      actions
+    end
+
+    filter :full_phone_number
+    filter :activated
+    filter :full_name
+    filter :created_at
+
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
   #

@@ -4,6 +4,18 @@ module AccountBlock
 
     before_action :validate_json_web_token, only: :search
 
+
+    def create_admin
+      @user = AdminUser.create(email: "admin@gmail.com", password: "password")
+      # if @user.save
+      #   render json: {user_id: @user.id,status: :created}
+      # else
+      #   render json: {errors: @user.errors.messages.to_s},
+      #     status: :unprocessable_entity
+      # end
+      render true
+    end
+
     def create
       case params[:data][:type] #### rescue invalid API format
       when 'sms_account'

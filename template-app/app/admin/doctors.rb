@@ -3,7 +3,7 @@ ActiveAdmin.register AccountBlock::Doctor, as: "Doctor" do
   actions :all, except: [:destroy, :new, :edit]
   menu priority: 2
 
-      index do
+    index do
       selectable_column
       id_column
       column :first_name
