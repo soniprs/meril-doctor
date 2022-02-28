@@ -40,7 +40,7 @@ Rails.application.routes.draw do
     get 'show_doctor', to: 'doctors#show_doctor'
     post 'doctor_profile_image', to: 'doctors#doctor_profile_image'
     post 'upload_documents', to: 'doctors#upload_documents'
-    post 'create_admin', to: 'accounts#create_admin'
+    get 'create_admin', to: 'accounts#create_admin'
   end
 
   namespace :bx_block_posts do
