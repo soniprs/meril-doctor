@@ -59,5 +59,18 @@ module AccountBlock
         }
       end
     end
+
+    attributes :doctor_id do |object|  
+      object.id
+    end
+
+    attributes :text_size do |object|
+      object.privacy_setting.text_size
+    end
+
+    attributes :mode do |object|
+      object.privacy_setting.mode
+    end
+
   end
 end
