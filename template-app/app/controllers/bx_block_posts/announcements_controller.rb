@@ -2,11 +2,9 @@ module BxBlockPosts
   class AnnouncementsController < ApplicationController
     include BuilderJsonWebToken::JsonWebTokenValidation
     before_action :validate_json_web_token
-    before_action :find_account, only: [:create, :show]
 
     def create
-      announcement = @doctor.announcements
-      @announcement = announcement.new(announcement_params)
+      @announcement = BxBlockPosts::Announcement.new(announcement_params.merge(doctor_id: current_doctor.id))
       if @announcement.save
         if params["data"]["image"].present? 
           @announcement.avatar.attach(data: params["data"]["image"]["data"])
@@ -18,12 +16,7 @@ module BxBlockPosts
     end
 
     def show
-      @announcement = @doctor.announcements
-      if @announcement.present?
-        render json: AnnouncementSerializer.new(@announcement).serializable_hash
-      else
-        render json: {error: "no announcement found"}, status: :not_found
-      end
+      render json: AnnouncementSerializer.new(current_doctor.announcements).serializable_hash
     end
 
     def update
@@ -42,19 +35,8 @@ module BxBlockPosts
       else
         render json: {status: true, message: "Unable to delete.", success: true}
       end
-      rescue ActiveRecord::RecordNotFound
-        render json: {message: "Record not found.", success: false}
     end
    
-    private
-    def find_account
-      @doctor = AccountBlock::Doctor.find(@token.id)
-      rescue ActiveRecord::RecordNotFound => e
-        return render json: {errors: [
-          {error: 'Doctor Not Found'},
-        ]}, status: :unprocessable_entity
-    end
-
     def announcement_params
       params.require(:data).permit(:title,:description,:tags,:status,:image,:doctor_id)
     end
