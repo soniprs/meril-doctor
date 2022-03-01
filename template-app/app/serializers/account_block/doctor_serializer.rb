@@ -61,15 +61,15 @@ module AccountBlock
     end
 
     attributes :doctor_id do |object|  
-      object.id
+      object.id  
     end
-
+    
     attributes :text_size do |object|
-      object.privacy_setting.text_size
+      object.privacy_setting.text_size     if  object.privacy_setting.present?
     end
 
     attributes :mode do |object|
-      object.privacy_setting.mode
+      object.privacy_setting.mode      if  object.privacy_setting.present?
     end
 
   end

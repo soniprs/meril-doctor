@@ -37,11 +37,11 @@ module AccountBlock
     end
 
     attributes :language do |object|
-      object.privacy_setting.language
+      object.privacy_setting.language  if  object.privacy_setting.present?
     end
 
     attributes :mode do |object|
-      object.privacy_setting.mode
+      object.privacy_setting.mode      if  object.privacy_setting.present?
     end
 
   end
