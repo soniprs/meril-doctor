@@ -50,6 +50,15 @@ Rails.application.routes.draw do
     delete 'delete', to: 'announcements#delete'    
   end
 
+#<---------------doctor fees management/packages----------------------------------------->
+  namespace :bx_block_fee_management do
+    post 'create_package', to: 'packages#create_package'
+    get 'show_package', to: 'packages#show_package'
+    get 'show', to: 'packages#show'
+    put 'update_package', to: 'packages#update_package'
+    delete 'delete_package', to: 'packages#delete_package'    
+  end
+
 #<---------------search doctor routes----------------------------------------->
   namespace :account_block do
     get 'search_doctor', to: 'searchs#search_doctor'

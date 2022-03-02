@@ -8,6 +8,7 @@ module AccountBlock
     has_many_attached :registration_details
     has_many_attached :clinic_details
     has_many :announcements, class_name: 'BxBlockPosts::Announcement'
+    has_many :packages, class_name: 'BxBlockFeeManagement::Package'
     
     def update_otp
       update(pin: rand(1_00000..9_99999))
