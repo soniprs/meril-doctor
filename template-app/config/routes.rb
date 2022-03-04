@@ -70,6 +70,13 @@ Rails.application.routes.draw do
     get 'show', to: 'clinics#show'
     delete 'delete', to: 'clinics#delete'
     put 'update', to: 'clinics#update'
+#<---------------doctor fees management/packages----------------------------------------->
+  namespace :bx_block_fee_management do
+    post 'create_package', to: 'packages#create_package'
+    get 'show_package', to: 'packages#show_package'
+    get 'show', to: 'packages#show'
+    put 'update_package', to: 'packages#update_package'
+    delete 'delete_package', to: 'packages#delete_package'    
   end
 
 #<---------------search doctor routes----------------------------------------->

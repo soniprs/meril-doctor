@@ -11,6 +11,7 @@ module AccountBlock
     has_many :availabilities, class_name: 'BxBlockAppointmentManagement::Availability'
     has_one :privacy_setting,class_name: 'BxBlockSettings::PrivacySetting',dependent: :destroy
     after_create :create_privacy_setting
+    has_many :packages, class_name: 'BxBlockFeeManagement::Package'
 
     def update_otp
       update(pin: rand(1_00000..9_99999))
