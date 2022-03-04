@@ -43,11 +43,33 @@ Rails.application.routes.draw do
     get 'create_admin', to: 'accounts#create_admin'
   end
 
+#<---------------doctor announcement routes----------------------------------------->
   namespace :bx_block_posts do
     post 'create', to: 'announcements#create'
     get 'show', to: 'announcements#show'
     put 'update', to: 'announcements#update'
     delete 'delete', to: 'announcements#delete'    
+  end
+
+#<---------------doctor profile routes----------------------------------------->
+  namespace :bx_block_profile do
+    put 'doctor_profile', to: 'profiles#doctor_profile'
+  end
+#<---------------doctor availiability routes----------------------------------------->
+  namespace :bx_block_calendar do
+    post 'create', to: 'availabilities#create'
+    get 'show', to: 'availabilities#show'
+    get 'doctor_availiablity', to: 'availabilities#doctor_availiablity'
+    put 'update', to: 'availabilities#update'
+    delete 'delete', to: 'availabilities#delete'
+  end
+
+#<---------------doctor clinics routes----------------------------------------->
+  namespace :bx_block_address do
+    post 'create', to: 'clinics#create'
+    get 'show', to: 'clinics#show'
+    delete 'delete', to: 'clinics#delete'
+    put 'update', to: 'clinics#update'
   end
 
 #<---------------search doctor routes----------------------------------------->
