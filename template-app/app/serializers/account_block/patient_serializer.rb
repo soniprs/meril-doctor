@@ -31,5 +31,18 @@ module AccountBlock
       end
     end
     
+    
+    attributes :patient_id do |object|  
+      object.id
+    end
+
+    attributes :language do |object|
+      object.privacy_setting.language  if  object.privacy_setting.present?
+    end
+
+    attributes :mode do |object|
+      object.privacy_setting.mode      if  object.privacy_setting.present?
+    end
+
   end
 end
