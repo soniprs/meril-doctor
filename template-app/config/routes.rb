@@ -70,6 +70,7 @@ Rails.application.routes.draw do
     get 'show', to: 'clinics#show'
     delete 'delete', to: 'clinics#delete'
     put 'update', to: 'clinics#update'
+  end
 #<---------------doctor fees management/packages----------------------------------------->
   namespace :bx_block_fee_management do
     post 'create_package', to: 'packages#create_package'
@@ -102,5 +103,4 @@ Rails.application.routes.draw do
     put 'update_allergy', to: 'allergies#update_allergy'
     get 'get_allergies_list', to: 'allergies#get_allergies_list'
   end
-
 end
