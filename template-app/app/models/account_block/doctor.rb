@@ -8,9 +8,20 @@ module AccountBlock
     has_many_attached :registration_details
     has_many_attached :clinic_details
     has_many :announcements, class_name: 'BxBlockPosts::Announcement'
-    
+    has_many :availabilities, class_name: 'BxBlockAppointmentManagement::Availability'
+    has_one :privacy_setting,class_name: 'BxBlockSettings::PrivacySetting',dependent: :destroy
+    after_create :create_privacy_setting
+    has_many :packages, class_name: 'BxBlockFeeManagement::Package'
+
     def update_otp
       update(pin: rand(1_00000..9_99999))
     end
+
+    private
+    
+    def create_privacy_setting
+      BxBlockSettings::PrivacySetting.create!(doctor_id: self.id,text_size: "17",mode: 0,patient_id: nil)
+    end
+
   end
 end
