@@ -143,6 +143,16 @@ module AccountBlock
       end
     end
 
+    def parent_patient_account_details
+      @patients = Patient.find_by(parent_patient_id: params[:parent_patient_id])
+      if @patients.present?
+        render json: PatientSerializer.new(@patients, meta: {message: 'List of Patients.'
+        }).serializable_hash, status: :ok
+      else
+        render json: {errors: [{message: 'Not found any user.'}]}, status: :ok
+      end
+    end
+
     def patient_detail
       render json: PatientSerializer.new(@patient, meta: {message: 'Patient Detail.'
       }).serializable_hash, status: :ok

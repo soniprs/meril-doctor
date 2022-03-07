@@ -18,6 +18,7 @@ module AccountBlock
       :health_id,
       :ayushman_bharat_id,
       :disease,
+      :parent_patient_id
 
     ]
 

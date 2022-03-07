@@ -2,6 +2,7 @@ module AccountBlock
   class Patient < ApplicationRecord
     self.table_name = :patients
     validates :full_phone_number, presence: true,uniqueness: true
+    has_many :patients, class_name: "AccountBlock::Patient",foreign_key: "parent_patient_id"
     has_one_attached :profile_photo
     has_many :family_members
     has_one :privacy_setting, class_name: 'BxBlockSettings::PrivacySetting', dependent: :destroy

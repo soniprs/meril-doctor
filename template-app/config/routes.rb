@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     get 'patient_detail', to: 'patients#patient_detail'
     get 'current_patient_detail', to: 'patients#current_patient_detail'
     delete 'delete_patient', to: 'patients#delete_patient'
+    get 'parent_patient_account_details', to: 'patients#parent_patient_account_details'
    end
   
   # <----------Doctor Routes-------------------------------------->
