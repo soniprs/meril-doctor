@@ -55,6 +55,15 @@ module BxBlockAddress
       end
     end
 
+    def format_activerecord_errors(errors)
+      result = []
+      errors.each do |attribute, error|
+        result << { attribute => error }
+      end
+      result
+    end
+
+
     private
     def clinic_params
       params.permit(:name,:address,:contact_no,:link,:doctor_id)

@@ -7,8 +7,6 @@ module BxBlockPosts
         :description,
         :tags,
         :doctor_id,
-        :created_at,
-        :updated_at
     ]
 
     attribute :image do |object|

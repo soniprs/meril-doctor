@@ -7,11 +7,12 @@ module AccountBlock
     has_many_attached :degree_deatils
     has_many_attached :registration_details
     has_many_attached :clinic_details
-    has_many :announcements, class_name: 'BxBlockPosts::Announcement'
-    has_many :availabilities, class_name: 'BxBlockAppointmentManagement::Availability'
+    has_many :announcements, class_name: 'BxBlockPosts::Announcement',dependent: :destroy
+    has_many :availabilities, class_name: 'BxBlockAppointmentManagement::Availability',dependent: :destroy
     has_one :privacy_setting,class_name: 'BxBlockSettings::PrivacySetting',dependent: :destroy
     after_create :create_privacy_setting
-    has_many :packages, class_name: 'BxBlockFeeManagement::Package'
+    has_many :packages, class_name: 'BxBlockFeeManagement::Package',dependent: :destroy
+    has_many :patients, class_name: 'AccountBlock::DoctorPatient',dependent: :destroy
 
     def update_otp
       update(pin: rand(1_00000..9_99999))

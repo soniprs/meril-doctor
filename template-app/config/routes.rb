@@ -43,6 +43,15 @@ Rails.application.routes.draw do
     get 'create_admin', to: 'accounts#create_admin'
   end
 
+#<---------------doctors patient routes----------------------------------------->
+  namespace :account_block do
+    post 'create_doctor_patients', to: 'doctor_patients#create_doctor_patients'
+    get 'show_doctor_patients', to: 'doctor_patients#show_doctor_patients'
+    get 'doctors_patient', to: 'doctor_patients#doctors_patient'
+    put 'update_doctor_patients', to: 'doctor_patients#update_doctor_patients'
+    delete 'delete_doctor_patients', to: 'doctor_patients#delete_doctor_patients'
+  end
+  
 #<---------------doctor announcement routes----------------------------------------->
   namespace :bx_block_posts do
     post 'create', to: 'announcements#create'
@@ -51,10 +60,6 @@ Rails.application.routes.draw do
     delete 'delete', to: 'announcements#delete'    
   end
 
-#<---------------doctor profile routes----------------------------------------->
-  namespace :bx_block_profile do
-    put 'doctor_profile', to: 'profiles#doctor_profile'
-  end
 #<---------------doctor availiability routes----------------------------------------->
   namespace :bx_block_calendar do
     post 'create', to: 'availabilities#create'
@@ -71,6 +76,7 @@ Rails.application.routes.draw do
     delete 'delete', to: 'clinics#delete'
     put 'update', to: 'clinics#update'
   end
+  
 #<---------------doctor fees management/packages----------------------------------------->
   namespace :bx_block_fee_management do
     post 'create_package', to: 'packages#create_package'
@@ -78,6 +84,15 @@ Rails.application.routes.draw do
     get 'show', to: 'packages#show'
     put 'update_package', to: 'packages#update_package'
     delete 'delete_package', to: 'packages#delete_package'    
+  end
+
+#<---------------doctor patient prescription----------------------------------------->
+  namespace :bx_block_medicine do
+    post 'create', to: 'prescriptions#create'
+    # get 'show_package', to: 'packages#show_package'
+    get 'show', to: 'prescriptions#show'
+    put 'update', to: 'prescriptions#update'
+    delete 'delete', to: 'prescriptions#delete'    
   end
 
 #<---------------search doctor routes----------------------------------------->

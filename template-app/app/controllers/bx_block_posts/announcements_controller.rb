@@ -8,6 +8,14 @@ module BxBlockPosts
       if @announcement.save
         if params["data"]["image"].present? 
           @announcement.avatar.attach(data: params["data"]["image"]["data"])
+        end
+        array = []
+        if params[:data][:tags].present?
+          announcement = params[:data][:tags]
+          announcement.each do |ab|
+            array << ab
+          end
+          @announcement.update({:tags => array})
         end   
         render json: BxBlockPosts::AnnouncementSerializer.new(@announcement).serializable_hash, status: 200
       else
@@ -38,7 +46,7 @@ module BxBlockPosts
     end
    
     def announcement_params
-      params.require(:data).permit(:title,:description,:tags,:status,:image,:doctor_id)
+      params.require(:data).permit(:title,:description,:status,:image,:doctor_id)
     end
   end
 end
