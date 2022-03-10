@@ -1,37 +1,71 @@
 module BxBlockCalendar
   class AvailabilitiesController < ApplicationController
-
     include BuilderJsonWebToken::JsonWebTokenValidation
+    before_action :validate_json_web_token
 
-    before_action :check_user_role, only: %i(update_availability_time)
-    before_action :get_service_provider, only: %i(get_booked_time_slots)
-
-    def update_availability_time
-      slot = BxBlockAppointmentManagement::Availability.new(
-        slot_detail.merge({ service_provider_id: @service_provider.id })
-      )
-      if slot.save
-        render json: BxBlockCalendar::AvailabilitySerializer.new(slot, meta: {
-          message: 'Your slot created for the day'
-        }).serializable_hash, status: :created
+    def create
+      availability = BxBlockAppointmentManagement::Availability.new(
+        availability_detail.merge({ doctor_id: current_doctor.id }))
+      if availability.save
+        array = []
+        if params[:day_of_week].present?
+          abc = params[:day_of_week]
+          abc.each do |ab|
+            array << ab
+          end
+          availability.update({:day_of_week => array})
+        end
+        render json: BxBlockCalendar::AvailabilitySerializer.new(availability).serializable_hash, status: :created
       else
-        render json: { errors: format_activerecord_errors(slot.errors) },
+        render json: { errors: format_activerecord_errors(availability.errors) },
                status: :unprocessable_entity
       end
     end
 
-    private
-    def slot_detail
-      params.require(:availability).permit(
-        :availability_date, :start_time, :end_time, :unavailable_start_time, :unavailable_end_time
-      )
+    def update
+      availability = BxBlockAppointmentManagement::Availability.find(params[:id])
+      if availability.update(availability_detail)
+        array = []
+        if params[:availability][:day_of_week].present?
+          abc = params[:availability][:day_of_week]
+          abc.each do |ab|
+            array << ab
+          end
+          availability.update({:day_of_week => array})
+        end
+        render json: BxBlockCalendar::AvailabilitySerializer.new(availability).serializable_hash, status: 200
+      else
+        render json: { message: availability.errors.full_messages.to_sentence, status: 422 }, status: :unprocessable_entity
+      end
+    end
+    
+    def show
+      @availability = BxBlockAppointmentManagement::Availability.find(params[:id])
+      if @availability
+        render json: BxBlockCalendar::AvailabilitySerializer.new(@availability).serializable_hash
+      else
+        render json: {message: "record not found"}, status: :not_found
+      end
     end
 
-    def check_user_role
-      @service_provider = AccountBlock::Account.find_by(id: @token.id)
-      render json: {
-        errors: 'Permission denied'
-      } and return unless is_merchant?#@service_provider.is_merchant?
+    def doctor_availiablity 
+      render json: BxBlockCalendar::AvailabilitySerializer.new(
+      current_doctor.availabilities, meta: {message: 'List of all availability'}
+    )
+    end
+
+    def delete
+      @availability = BxBlockAppointmentManagement::Availability.find(params[:id])
+      if @availability.destroy
+        render json: {status: true, message: "Deleted Successfully.", success: true}
+      else
+        render json: {status: true, message: "Unable to delete.", success: true}
+      end
+    end
+
+    private
+    def availability_detail
+      params.require(:availability).permit(:start_time, :end_time, :mode_type,:doctor_id)
     end
 
     def format_activerecord_errors(errors)
@@ -40,12 +74,6 @@ module BxBlockCalendar
         result << { attribute => error }
       end
       result
-    end
-
-    def is_merchant?
-      role = BxBlockRolesPermissions::Role.find_by(id: @service_provider.role_id)
-      return false unless role
-      role.name == 'Merchant'
     end
   end
 end

@@ -43,11 +43,41 @@ Rails.application.routes.draw do
     get 'create_admin', to: 'accounts#create_admin'
   end
 
+#<---------------doctor announcement routes----------------------------------------->
   namespace :bx_block_posts do
     post 'create', to: 'announcements#create'
     get 'show', to: 'announcements#show'
     put 'update', to: 'announcements#update'
     delete 'delete', to: 'announcements#delete'    
+  end
+
+#<---------------doctor profile routes----------------------------------------->
+  namespace :bx_block_profile do
+    put 'doctor_profile', to: 'profiles#doctor_profile'
+  end
+#<---------------doctor availiability routes----------------------------------------->
+  namespace :bx_block_calendar do
+    post 'create', to: 'availabilities#create'
+    get 'show', to: 'availabilities#show'
+    get 'doctor_availiablity', to: 'availabilities#doctor_availiablity'
+    put 'update', to: 'availabilities#update'
+    delete 'delete', to: 'availabilities#delete'
+  end
+
+#<---------------doctor clinics routes----------------------------------------->
+  namespace :bx_block_address do
+    post 'create', to: 'clinics#create'
+    get 'show', to: 'clinics#show'
+    delete 'delete', to: 'clinics#delete'
+    put 'update', to: 'clinics#update'
+  end
+#<---------------doctor fees management/packages----------------------------------------->
+  namespace :bx_block_fee_management do
+    post 'create_package', to: 'packages#create_package'
+    get 'show_package', to: 'packages#show_package'
+    get 'show', to: 'packages#show'
+    put 'update_package', to: 'packages#update_package'
+    delete 'delete_package', to: 'packages#delete_package'    
   end
 
 #<---------------search doctor routes----------------------------------------->
@@ -73,5 +103,4 @@ Rails.application.routes.draw do
     put 'update_allergy', to: 'allergies#update_allergy'
     get 'get_allergies_list', to: 'allergies#get_allergies_list'
   end
-
 end
